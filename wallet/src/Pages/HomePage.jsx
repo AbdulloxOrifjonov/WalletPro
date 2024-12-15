@@ -14,7 +14,9 @@ const HomePage = () => {
     convertToBaseCurrency,
     selectedCurrency,
     setSelectedCurrency,
+    setTransactions,
   } = useContext(WalletContext);
+
   const [filtered, setFiltered] = useState(false);
   const [filterTransaction, setFilterTransaction] = useState("");
 
@@ -39,7 +41,8 @@ const HomePage = () => {
       category,
       description,
       selectedCurrency,
-      date: new Date().toISOString(),
+      date: new Date().toISOString(), // Using the date as a unique identifier
+      transactionId: new Date().toISOString(), // Adding a unique ID for the transaction
     };
 
     if (newTransaction.category === "Daromad") {
@@ -52,6 +55,14 @@ const HomePage = () => {
 
     setAmount("");
     setDescription("");
+  };
+
+  const handleDeleteTransaction = (transactionId) => {
+    console.log(transactionId);
+    const updatedTransactions = transactions.filter(
+      (transaction) => transaction.date !== transactionId,
+    );
+    setTransactions(updatedTransactions);
   };
 
   return (
@@ -110,20 +121,6 @@ const HomePage = () => {
       <div className="offcanvas-body">
         <h3 className="mb-4 text-center text-primary">Your Transactions</h3>
 
-        <div className="mb-4">
-          <p>
-            <strong className="text-success">Total Income:</strong> {convertedBalance}{" "}
-            {selectedCurrency}
-          </p>
-          <p>
-            <strong className="text-danger">Total Expenses:</strong> {convertedBalance}{" "}
-            {selectedCurrency}
-          </p>
-          <p>
-            <strong className="text-warning">Net Balance:</strong> {convertedBalance}{" "}
-            {selectedCurrency}
-          </p>
-        </div>
 
         <h6 className="mb-4 text-center text-muted">
           Filtered: {`${filtered === false ? "No Filter Applied" : "Filtered"}`}
@@ -161,6 +158,12 @@ const HomePage = () => {
                     <strong>{transaction.category}</strong> - {transaction.amount} -{" "}
                     {transaction.description} - {transaction.selectedCurrency} - {transaction.date}
                   </div>
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => handleDeleteTransaction(transaction.date)}
+                  >
+                    Delete
+                  </button>
                 </li>
               ) : null,
             )}
